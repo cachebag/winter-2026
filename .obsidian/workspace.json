@@ -1,0 +1,212 @@
+{
+  "main": {
+    "id": "5ecfec820b1e6386",
+    "type": "split",
+    "children": [
+      {
+        "id": "2e059c80de14ac73",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b98a48bf03066942",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "README.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "README"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "9363d2d9aef57ce9",
+    "type": "split",
+    "children": [
+      {
+        "id": "658bda1262243428",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "954eb736ddf19c5b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "a456afbef01865ac",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "7059ca18b32f16bc",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "11edfb7b64cd5ace",
+    "type": "split",
+    "children": [
+      {
+        "id": "215bf4ea51385e17",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f8af55aa2de1e616",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "nmrs/1.x/Working notes for 1.x.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Working notes for 1.x"
+            }
+          },
+          {
+            "id": "bded1ce99ace7da6",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "nmrs/1.x/Working notes for 1.x.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Working notes for 1.x"
+            }
+          },
+          {
+            "id": "944f67c1081b57eb",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "5d2e2197ff672076",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "c302023df3b05b06",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "nmrs/1.x/Working notes for 1.x.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Working notes for 1.x"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "b98a48bf03066942",
+  "lastOpenFiles": [
+    "CSC-5991/w1/Initial.md",
+    "Schedule.md",
+    "README.md",
+    "CSC-5272/w1/Initial.md",
+    "CSC-5272/w1",
+    "CSC-5272",
+    "CSC-4420/w1/Initial.md",
+    "CSC-5991/w1",
+    "CSC-5991",
+    "CSC-3110/Lab/w1/Initial.md",
+    "CSC-3110/w1/Initial.md",
+    "CSC-3110/Lab/w1",
+    "CSC-3110/w1",
+    "CSC-3110/Lab",
+    "CSC-3110",
+    "CSC-4110/w1/Initial.md",
+    "CSC-4110/Lab/w1/Initial.md",
+    "CSC-4420/w1",
+    "CSC-4110/w1",
+    "CSC-4420/Lab/w1/Initial.md",
+    "nmrs/1.x/Working notes for 1.x.md",
+    "CSC-4110/Lab/Week 1.md",
+    "Welcome.md"
+  ]
+}
