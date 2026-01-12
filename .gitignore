@@ -1,0 +1,145 @@
+# ===============================
+# OS / Editor Noise
+# ===============================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+*.bak
+*.log
+.vscode/
+.idea/
+*.code-workspace
+
+# ===============================
+# Python
+# ===============================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.env
+.venv/
+venv/
+ENV/
+env/
+pip-wheel-metadata/
+pip-log.txt
+coverage.xml
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# ===============================
+# C / C++
+# ===============================
+# Compiled Objects
+*.o
+*.obj
+*.lo
+*.slo
+
+# Binaries
+*.exe
+*.out
+*.app
+*.dll
+*.so
+*.dylib
+
+# Build Directories
+build/
+bin/
+dist/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+*.make
+*.ninja
+
+# Debug / Profiler
+*.dSYM/
+*.gdb
+*.lldb
+
+# ===============================
+# Node / JavaScript
+# ===============================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.pnpm-store/
+.yarn/
+
+# ===============================
+# Large / Binary Files
+# ===============================
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+*.iso
+
+# Media
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.flv
+*.wmv
+*.mp3
+*.wav
+*.flac
+*.aac
+*.ogg
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.webp
+*.psd
+*.ai
+
+# Data / Models
+*.csv
+*.tsv
+*.parquet
+*.h5
+*.hdf5
+*.npy
+*.npz
+*.pt
+*.pth
+*.onnx
+*.pkl
+*.joblib
+
+# ===============================
+# Archives / Dumps / Backups
+# ===============================
+*.sql
+*.dump
+*.bak
+*.old
+*.orig
+
+# ===============================
+# Misc
+# ===============================
+.cache/
+.temp/
+tmp/
+logs/
+
