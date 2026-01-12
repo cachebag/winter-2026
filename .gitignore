@@ -142,4 +142,4 @@ pnpm-debug.log*
 .temp/
 tmp/
 logs/
-
+.obsidian/
