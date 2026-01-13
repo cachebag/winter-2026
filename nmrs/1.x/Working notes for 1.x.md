@@ -47,7 +47,7 @@ async fn settings_proxy(conn: &Connection) -> Result<zbus::Proxy<'_>>
 
 ## Error Handling
 
-### ConnectionError Granularity
+~~### ConnectionError Granularity
 
 `ConnectionError::Stuck(String)` is a catch-all. Consider breaking down:
 - `StreamEnded` - signal stream closed unexpectedly
@@ -64,7 +64,7 @@ The `anyhow` crate could help if thiserror alone is too verbose.
 
 In `vpn.rs`, many errors map to `ConnectionStateReason::Unknown`.
 Extract specific WireGuard failure modes (key validation, endpoint unreachable)
-where NetworkManager provides enough signal context.
+where NetworkManager provides enough signal context.~~
 
 ---
 
