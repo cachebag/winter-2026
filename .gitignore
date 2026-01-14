@@ -143,3 +143,11 @@ pnpm-debug.log*
 tmp/
 logs/
 .obsidian/
+
+# ===============================
+# Rust
+# ===============================
+/target/
+**/target/
+Cargo.lock
+**/*.rs.bk
