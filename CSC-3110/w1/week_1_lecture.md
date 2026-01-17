@@ -33,6 +33,7 @@ fn find_gcd(mut a: u32, mut b: u32) -> u32 {
 ![[Pasted image 20260113183236.png]]
 
 ## Sequential or Parallel?
+
  - Sequential: instructions are executed one after another, one op at a time
  - Parallel: Operations are executed concurrently
 
@@ -56,3 +57,47 @@ An algorithm design technique (or “strategy” or “paradigm”) is a general
 - Greedy Technique 
 - Iterative Improvement 
 
+**Proving an Algorithms Correctness**
+
+Once you've specified an algorithm, you must prove that the algorithm yields a required result for every legitimate input in a finite amount of time. For example: 
+
+- The correctness of Euclid’s algorithm for computing the greatest common divisor stems from the correctness of the equality gcd(m, n) = gcd(n, m mod n), the simple observation that the second integer gets smaller on every iteration of the algorithm, and the fact that the algorithm stops when the second integer becomes 0.
+
+**Analyzing the Algorithm**
+
+We usually want our algorithms to possess several qualities:
+- After correctness, by far the most important is efficiency. 
+- Time efficiency, indicating how fast the algorithm runs. 
+- Space efficiency, indicating how much extra memory it uses. 
+- Another desirable characteristic of an algorithm is simplicity. Simpler algorithms are easier to understand and easier to program, consequently, the resulting programs usually contain fewer bugs. 
+- Yet another desirable characteristic of an algorithm is generality. 
+
+There are, in fact, two issues here: generality of the problem the algorithm solves and the set of inputs it accepts. 
+
+**Coding an algorithm**
+
+Most algorithms are destined to be ultimately implemented as computer programs, obviously.
+
+Programming an algorithm presents both a peril and an opportunity. The peril lies in the possibility of making the transition from an algorithm to a program either **incorrectly** or very **inefficiently**.
+
+Practically, the validity of programs is always is established by testing. 
+
+## Important problem types
+
+The areas of problem that attract particular attention from researchers are:
+
+- Sorting 
+- Searching
+- String processing 
+- Graph problems 
+- Combinatorial problems 
+- Geometric problems
+- Numerical problems
+
+**Sorting**
+
+The sorting problem is to rearrange the items of a given list in nondecreasing order. 
+
+Of course, for this problem to be meaningful, the nature of the list items must allow such an ordering. (Mathematicians would say that there must exist a relation of total ordering.) 
+
+As a practical matter, we usually need to sort lists of numbers, characters from an alphabet, character strings, and, most important, records similar to those maintained by schools about their students, libraries about their holdings, and companies about their employees. 
