@@ -310,56 +310,7 @@ When breaking changes accumulate for 2.0:
 
 -----------
 
-I'll analyze your NetworkManager D-Bus library to identify potential issues and suggest improvements while avoiding breaking changes.
-
-[6 tools called]
-
-Let me continue exploring the core implementation to get a comprehensive view:
-
-[3 tools called]
-
-Now let me check a few more critical files to get a complete picture:
-
-[7 tools called]
-
-Now let me check for any potential issues with async/await patterns and resource management:
-
-[3 tools called]
-
-Perfect! Now I have a comprehensive understanding of your library. Let me provide you with a detailed analysis of issues and suggestions:
-
-## Analysis of nmrs - NetworkManager D-Bus Library
-
-After thoroughly reviewing your library, I've identified several areas for improvement. Your goal of a mature, properly engineered API is well on track, but here are issues and enhancements to consider:
-
 ### **Critical Issues**
-
-#### 1. **Signal Stream Resource Leaks**
-**Location**: `monitoring/network.rs`, `monitoring/device.rs`
-
-The monitoring functions create signal streams but never explicitly clean them up. When the stream ends or an error occurs, the subscriptions may not be properly unsubscribed.
-
-**Issue**: Signal streams in zbus are automatically cleaned up when dropped, but your monitoring functions run indefinitely and only return on error. If a user wants to stop monitoring, they have no clean way to do so.
-
-**Suggestion**: 
-- Add a cancellation mechanism using `tokio::select!` with a cancellation token
-- Consider returning a handle that allows graceful shutdown
-- Document that monitoring functions run indefinitely
-
-#### 2. **Race Condition in Signal Subscription**
-**Location**: `core/state_wait.rs` lines 55-62
-
-You subscribe to signals AFTER creating the proxy, but there's still a window between subscription and checking current state where a state change could be missed.
-
-**Current code**:
-```rust
-let mut stream = active_conn.receive_activation_state_changed().await?;
-let current_state = active_conn.state().await?;
-```
-
-**Issue**: If the state changes between subscribing and checking, you might miss it.
-
-**Suggestion**: This is actually handled correctly (subscribe first, then check), but you should add a re-check after the loop to catch any state changes that occurred during the gap.
 
 #### 3. **Empty Password Handling is Confusing**
 **Location**: `core/connection.rs` lines 627-644
@@ -380,98 +331,7 @@ None if matches!(creds, WifiSecurity::WpaPsk { psk } if psk.trim().is_empty()) =
 
 ### **Design Issues**
 
-#### 4. **No Concurrency Protection**
-**Location**: Throughout connection logic
-
-Multiple simultaneous calls to `connect()` on the same `NetworkManager` instance could interfere with each other.
-
-**Issue**: If two tasks try to connect to different networks simultaneously, they might:
-- Both try to disconnect the device
-- Race on activation
-- Interfere with each other's state monitoring
-
-**Suggestion**: 
-- Add internal mutex/lock for connection operations
-- Or document that concurrent connections are not supported
-- Consider adding a `is_connecting()` method
-
-#### 5. **Incomplete IPv6 Support**
-**Location**: `api/models.rs` line 809, 823, 842
-
-```rust
-/// IPv6 address (currently always `None` - IPv6 parsing not yet implemented).
-pub ip6_address: Option<String>,
-```
-
-**Issue**: IPv6 is documented as unimplemented but the field exists in the API.
-
-**Suggestion**: 
-- Either implement IPv6 support
-- Or remove the field and add it in a future breaking change
-- Current approach is fine for avoiding breaking changes
-
-#### 6. **Timeout Values Are Hardcoded**
-**Location**: `core/state_wait.rs` lines 36-39
-
-```rust
-const CONNECTION_TIMEOUT: Duration = Duration::from_secs(30);
-const DISCONNECT_TIMEOUT: Duration = Duration::from_secs(10);
-```
-
-**Issue**: Users cannot configure timeouts for their specific use cases (slow networks, enterprise auth, etc.).
-
-**Suggestion**: 
-- Add a `ConnectionConfig` or `NetworkManagerBuilder` with configurable timeouts
-- Keep current values as sensible defaults
-
----
-
 ### **API/Ergonomics Issues**
-
-#### 7. **Inconsistent Error Handling for "Not Found" Cases**
-**Location**: Various
-
-- `disconnect_vpn()` returns `Ok(())` if VPN doesn't exist (idempotent)
-- `forget()` returns `Err(NoSavedConnection)` if connection doesn't exist
-- `forget_vpn()` returns `Err(NoSavedConnection)` if VPN doesn't exist
-
-**Issue**: Inconsistent behavior - some operations are idempotent, others aren't.
-
-**Suggestion**: 
-- Make all "delete/forget/disconnect" operations idempotent (return Ok if already in desired state)
-- Or make them all return errors consistently
-- Document the chosen behavior clearly
-
-#### 8. **Missing Convenience Methods**
-**Location**: `api/network_manager.rs`
-
-Useful methods that are missing:
-- `is_connected()` - check if any network is connected
-- `current_network()` - get full `Network` object for current connection
-- `disconnect()` - disconnect from current network (not just VPN)
-- `list_saved_connections()` - list all saved connection profiles
-- `get_device_by_interface(name: &str)` - find device by name
-
-**Suggestion**: Add these for better ergonomics.
-
-#### 9. **No Builder Pattern for Complex Types**
-**Location**: `api/models.rs`
-
-Creating `VpnCredentials` and `EapOptions` requires setting all fields manually, which is error-prone.
-
-**Suggestion**: Add builder patterns:
-```rust
-let creds = VpnCredentials::builder()
-    .name("MyVPN")
-    .wireguard()
-    .gateway("vpn.example.com:51820")
-    .private_key("...")
-    .address("10.0.0.2/24")
-    .add_peer(peer)
-    .build()?;
-```
-
----
 
 ### **Documentation Issues**
 
@@ -522,19 +382,6 @@ When D-Bus errors are converted to `ConnectionError::Dbus`, context about what o
 **Suggestion**: 
 - Wrap D-Bus errors with context using `thiserror`'s `#[error(transparent)]` or custom messages
 - Example: `#[error("Failed to activate connection: {0}")]`
-
-#### 14. **No Validation of Input Parameters**
-**Location**: Public API methods
-
-Methods like `connect(ssid: &str, ...)` don't validate inputs:
-- SSID length limits (0-32 bytes for WiFi)
-- Valid characters in SSID
-- WireGuard key format validation
-- IP address/CIDR validation
-
-**Suggestion**: Add input validation and return descriptive errors early.
-
----
 
 ### **Testing Issues**
 
