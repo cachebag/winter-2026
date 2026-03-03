@@ -1,6 +1,28 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { parts } from "./data";
 
+const STORAGE_KEY = "csc4420-flashcards";
+
+function loadProgress(title: string): { mastered: number[]; index: number } {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { mastered: [], index: 0 };
+    const data = JSON.parse(raw);
+    return data[title] ?? { mastered: [], index: 0 };
+  } catch {
+    return { mastered: [], index: 0 };
+  }
+}
+
+function saveProgress(title: string, mastered: Set<number>, index: number) {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const data = raw ? JSON.parse(raw) : {};
+    data[title] = { mastered: [...mastered], index };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch {}
+}
+
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -76,12 +98,17 @@ function PartSection({
   active: boolean;
   onActivate: () => void;
 }) {
-  const [index, setIndex] = useState(0);
+  const saved = useRef(loadProgress(title));
+  const [index, setIndex] = useState(() => saved.current.index);
   const [flipped, setFlipped] = useState(false);
-  const [mastered, setMastered] = useState<Set<number>>(new Set());
+  const [mastered, setMastered] = useState<Set<number>>(() => new Set(saved.current.mastered));
   const [shuffled, setShuffled] = useState(false);
   const [order, setOrder] = useState<number[]>(() => cards.map((_, i) => i));
   const [missedOnly, setMissedOnly] = useState(false);
+
+  useEffect(() => {
+    saveProgress(title, mastered, index);
+  }, [title, mastered, index]);
 
   const visibleOrder = useMemo(() => {
     if (missedOnly) return order.filter((i) => !mastered.has(i));
@@ -230,6 +257,8 @@ function PartSection({
                   onClick={(e) => {
                     e.stopPropagation();
                     setMastered(new Set());
+                    setIndex(0);
+                    setFlipped(false);
                   }}
                   className="text-xs text-zinc-600 hover:text-zinc-400 transition"
                 >
