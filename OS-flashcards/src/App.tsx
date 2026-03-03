@@ -157,12 +157,58 @@ function PartSection({
 
       {open && (
         <div className="mt-4">
-          <p className="mb-4 text-sm text-zinc-500">
-            {index + 1} / {cards.length}
-            {mastered.has(index) && (
-              <span className="ml-2 text-emerald-500">&#10003; mastered</span>
-            )}
-          </p>
+          <div className="mb-3 flex items-center justify-between">
+            <p className="text-sm text-zinc-500">
+              {index + 1} / {cards.length}
+              {mastered.has(index) && (
+                <span className="ml-2 text-emerald-500">&#10003; mastered</span>
+              )}
+            </p>
+            <div className="flex items-center gap-3">
+              {mastered.size > 0 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMastered(new Set());
+                  }}
+                  className="text-xs text-zinc-600 hover:text-zinc-400 transition"
+                >
+                  Reset progress
+                </button>
+              )}
+              {index > 0 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIndex(0);
+                    setFlipped(false);
+                  }}
+                  className="text-xs text-zinc-600 hover:text-zinc-400 transition"
+                >
+                  Restart
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="mb-4 flex gap-0.5">
+            {cards.map((_, i) => (
+              <button
+                key={i}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIndex(i);
+                  setFlipped(false);
+                }}
+                className={`h-1.5 flex-1 rounded-full transition-colors ${
+                  i === index
+                    ? "bg-emerald-500"
+                    : mastered.has(i)
+                      ? "bg-emerald-900"
+                      : "bg-zinc-700"
+                }`}
+              />
+            ))}
+          </div>
           <Flashcard
             key={`${title}-${index}`}
             front={cards[index].front}
@@ -201,17 +247,6 @@ function PartSection({
             >
               Prev
             </button>
-            {mastered.size > 0 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setMastered(new Set());
-                }}
-                className="text-xs text-zinc-600 hover:text-zinc-400 transition"
-              >
-                Reset progress
-              </button>
-            )}
             <button
               onClick={(e) => {
                 e.stopPropagation();
