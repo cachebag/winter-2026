@@ -150,15 +150,26 @@ function PartSection({
 
   const toggleFlip = useCallback(() => setFlipped((f) => !f), []);
 
+  const currentOrigIdx = visibleOrder.length > 0 ? visibleOrder[safeIndex] : -1;
+  const isMastered = mastered.has(currentOrigIdx);
+
   const handleGotIt = () => {
-    setMastered((prev) => {
-      const next = new Set(prev);
-      next.add(visibleOrder[safeIndex]);
-      return next;
-    });
-    if (safeIndex < visibleOrder.length - 1) {
-      setIndex(safeIndex + 1);
-      setFlipped(false);
+    if (isMastered) {
+      setMastered((prev) => {
+        const next = new Set(prev);
+        next.delete(currentOrigIdx);
+        return next;
+      });
+    } else {
+      setMastered((prev) => {
+        const next = new Set(prev);
+        next.add(currentOrigIdx);
+        return next;
+      });
+      if (safeIndex < visibleOrder.length - 1) {
+        setIndex(safeIndex + 1);
+        setFlipped(false);
+      }
     }
   };
 
@@ -227,7 +238,7 @@ function PartSection({
           <div className="mb-3 flex items-center justify-between">
             <p className="text-sm text-zinc-500">
               {visibleOrder.length > 0 ? safeIndex + 1 : 0} / {visibleOrder.length}
-              {visibleOrder.length > 0 && mastered.has(visibleOrder[safeIndex]) && (
+              {visibleOrder.length > 0 && isMastered && (
                 <span className="ml-2 text-emerald-500">&#10003; mastered</span>
               )}
             </p>
@@ -313,9 +324,13 @@ function PartSection({
                     e.stopPropagation();
                     handleGotIt();
                   }}
-                  className="rounded-lg bg-emerald-900 px-5 py-2.5 text-sm text-emerald-200 active:bg-emerald-700 transition hover:bg-emerald-800"
+                  className={`rounded-lg px-5 py-2.5 text-sm transition ${
+                    isMastered
+                      ? "bg-zinc-700 text-zinc-300 active:bg-zinc-600 hover:bg-zinc-600"
+                      : "bg-emerald-900 text-emerald-200 active:bg-emerald-700 hover:bg-emerald-800"
+                  }`}
                 >
-                  Got It
+                  {isMastered ? "Unmark" : "Got It"}
                 </button>
                 <button
                   onClick={(e) => {
