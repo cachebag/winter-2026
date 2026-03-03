@@ -1,5 +1,14 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { parts } from "./data";
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 function Flashcard({
   front,
@@ -70,6 +79,37 @@ function PartSection({
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [mastered, setMastered] = useState<Set<number>>(new Set());
+  const [shuffled, setShuffled] = useState(false);
+  const [order, setOrder] = useState<number[]>(() => cards.map((_, i) => i));
+  const [missedOnly, setMissedOnly] = useState(false);
+
+  const visibleOrder = useMemo(() => {
+    if (missedOnly) return order.filter((i) => !mastered.has(i));
+    return order;
+  }, [order, missedOnly, mastered]);
+
+  const currentCard = visibleOrder.length > 0 ? cards[visibleOrder[Math.min(index, visibleOrder.length - 1)]] : null;
+  const safeIndex = Math.min(index, visibleOrder.length - 1);
+
+  useEffect(() => {
+    if (index >= visibleOrder.length && visibleOrder.length > 0) {
+      setIndex(visibleOrder.length - 1);
+    }
+  }, [visibleOrder.length, index]);
+
+  const doShuffle = () => {
+    setOrder(shuffle(cards.map((_, i) => i)));
+    setShuffled(true);
+    setIndex(0);
+    setFlipped(false);
+  };
+
+  const unShuffle = () => {
+    setOrder(cards.map((_, i) => i));
+    setShuffled(false);
+    setIndex(0);
+    setFlipped(false);
+  };
 
   const goPrev = useCallback(() => {
     setIndex((i) => Math.max(0, i - 1));
@@ -77,27 +117,27 @@ function PartSection({
   }, []);
 
   const goNext = useCallback(() => {
-    setIndex((i) => Math.min(cards.length - 1, i + 1));
+    setIndex((i) => Math.min(visibleOrder.length - 1, i + 1));
     setFlipped(false);
-  }, [cards.length]);
+  }, [visibleOrder.length]);
 
   const toggleFlip = useCallback(() => setFlipped((f) => !f), []);
 
   const handleGotIt = () => {
     setMastered((prev) => {
       const next = new Set(prev);
-      next.add(index);
+      next.add(visibleOrder[safeIndex]);
       return next;
     });
-    if (index < cards.length - 1) {
-      setIndex(index + 1);
+    if (safeIndex < visibleOrder.length - 1) {
+      setIndex(safeIndex + 1);
       setFlipped(false);
     }
   };
 
   const handleReviewAgain = () => {
-    if (index < cards.length - 1) {
-      setIndex(index + 1);
+    if (safeIndex < visibleOrder.length - 1) {
+      setIndex(safeIndex + 1);
       setFlipped(false);
     }
   };
@@ -159,12 +199,32 @@ function PartSection({
         <div className="mt-4">
           <div className="mb-3 flex items-center justify-between">
             <p className="text-sm text-zinc-500">
-              {index + 1} / {cards.length}
-              {mastered.has(index) && (
+              {visibleOrder.length > 0 ? safeIndex + 1 : 0} / {visibleOrder.length}
+              {visibleOrder.length > 0 && mastered.has(visibleOrder[safeIndex]) && (
                 <span className="ml-2 text-emerald-500">&#10003; mastered</span>
               )}
             </p>
             <div className="flex items-center gap-3">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setMissedOnly((v) => !v);
+                  setIndex(0);
+                  setFlipped(false);
+                }}
+                className={`text-xs transition ${missedOnly ? "text-amber-400 hover:text-amber-300" : "text-zinc-600 hover:text-zinc-400"}`}
+              >
+                {missedOnly ? "Show all" : "Missed only"}
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  shuffled ? unShuffle() : doShuffle();
+                }}
+                className={`text-xs transition ${shuffled ? "text-blue-400 hover:text-blue-300" : "text-zinc-600 hover:text-zinc-400"}`}
+              >
+                {shuffled ? "Unshuffle" : "Shuffle"}
+              </button>
               {mastered.size > 0 && (
                 <button
                   onClick={(e) => {
@@ -173,10 +233,10 @@ function PartSection({
                   }}
                   className="text-xs text-zinc-600 hover:text-zinc-400 transition"
                 >
-                  Reset progress
+                  Reset
                 </button>
               )}
-              {index > 0 && (
+              {safeIndex > 0 && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -191,73 +251,92 @@ function PartSection({
             </div>
           </div>
           <div className="mb-4 flex gap-0.5">
-            {cards.map((_, i) => (
+            {visibleOrder.map((origIdx, i) => (
               <button
-                key={i}
+                key={origIdx}
                 onClick={(e) => {
                   e.stopPropagation();
                   setIndex(i);
                   setFlipped(false);
                 }}
                 className={`h-1.5 flex-1 rounded-full transition-colors ${
-                  i === index
+                  i === safeIndex
                     ? "bg-emerald-500"
-                    : mastered.has(i)
+                    : mastered.has(origIdx)
                       ? "bg-emerald-900"
                       : "bg-zinc-700"
                 }`}
               />
             ))}
           </div>
-          <Flashcard
-            key={`${title}-${index}`}
-            front={cards[index].front}
-            back={cards[index].back}
-            flipped={flipped}
-            onFlip={toggleFlip}
-          />
-          <div className="mt-4 flex items-center justify-center gap-3">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleGotIt();
-              }}
-              className="rounded-lg bg-emerald-900 px-5 py-2.5 text-sm text-emerald-200 active:bg-emerald-700 transition hover:bg-emerald-800"
-            >
-              Got It
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleReviewAgain();
-              }}
-              className="rounded-lg bg-zinc-800 px-5 py-2.5 text-sm text-zinc-300 active:bg-zinc-600 transition hover:bg-zinc-700"
-            >
-              Review Again
-            </button>
-          </div>
-          <div className="mt-4 flex items-center justify-between">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                goPrev();
-              }}
-              disabled={index === 0}
-              className="rounded-lg bg-zinc-800 px-5 py-2.5 text-sm text-zinc-300 active:bg-zinc-600 transition hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              Prev
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                goNext();
-              }}
-              disabled={index === cards.length - 1}
-              className="rounded-lg bg-zinc-800 px-5 py-2.5 text-sm text-zinc-300 active:bg-zinc-600 transition hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
-          </div>
+          {currentCard ? (
+            <>
+              <Flashcard
+                key={`${title}-${visibleOrder[safeIndex]}`}
+                front={currentCard.front}
+                back={currentCard.back}
+                flipped={flipped}
+                onFlip={toggleFlip}
+              />
+              <div className="mt-4 flex items-center justify-center gap-3">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleGotIt();
+                  }}
+                  className="rounded-lg bg-emerald-900 px-5 py-2.5 text-sm text-emerald-200 active:bg-emerald-700 transition hover:bg-emerald-800"
+                >
+                  Got It
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleReviewAgain();
+                  }}
+                  className="rounded-lg bg-zinc-800 px-5 py-2.5 text-sm text-zinc-300 active:bg-zinc-600 transition hover:bg-zinc-700"
+                >
+                  Review Again
+                </button>
+              </div>
+              <div className="mt-4 flex items-center justify-between">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goPrev();
+                  }}
+                  disabled={safeIndex === 0}
+                  className="rounded-lg bg-zinc-800 px-5 py-2.5 text-sm text-zinc-300 active:bg-zinc-600 transition hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  Prev
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goNext();
+                  }}
+                  disabled={safeIndex === visibleOrder.length - 1}
+                  className="rounded-lg bg-zinc-800 px-5 py-2.5 text-sm text-zinc-300 active:bg-zinc-600 transition hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <p className="text-lg font-medium text-emerald-400 mb-2">All cards mastered!</p>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setMissedOnly(false);
+                  setIndex(0);
+                  setFlipped(false);
+                }}
+                className="text-sm text-zinc-500 hover:text-zinc-300 transition"
+              >
+                Show all cards
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
