@@ -2,7 +2,7 @@ name: Deploy Flashcards to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - "OS-flashcards/**"
 
