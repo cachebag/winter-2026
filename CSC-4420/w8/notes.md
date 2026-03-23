@@ -38,4 +38,52 @@ The TLB must be **flushed** whenever its entries could become stale — most com
 
 On some architectures, TLB misses are handled entirely in **hardware**: the MMU automatically walks the page table and fills the TLB. On others, a TLB miss traps into the **OS**, which walks the table in software and loads the entry. Hardware management is faster; software management is more flexible (the OS can, for example, speculatively preload TLB entries it expects to need soon). This is a classic **efficiency vs. flexibility** trade-off.
 
-## 
+## TLB Misses and Page Fault Handling 
+
+- TLB miss handling:
+	- Walk page tables to find the mapping
+		- If mapping found, fill new TLB entry (soft miss)
+		- If mapping not found, page fault (hard miss)
+- OS handles PFs (similar to interrupts), cases:
+	- Access violation (seg fault)
+	- Legal access, but PF handler needs to fix up page tables
+		- The page is already in memory (minor PF) OR
+		- The page must be fetched from disk (major PF)
+
+## Page Replacement - Summary of the issue
+
+- Computer might use more virtual memory than it has physically 
+
+## PR: Hardware Support
+
+**Relevant PTE bits, e.g.:**
+- Modified (**M**): Set when page modified (aka "dirty bit")
+- Referenced (**R**): Set when page accessed (aka "accessed" bit)
+
+# Page Replacement: Basic algorithms
+
+- **Optimal:**
+	- Replace page that will be references as far in the future as possible
+	- Can this algo be implemented in practice? (Hint: NO)
+- **Random:**
+	- Simply replace a page at random
+- Not recently used (**NRU**):
+	- Classes of pages:
+		- Class 0: R=0, M=0, **Class 1:** R=0, M=1 **Class 2:** R=1, M=0, **Class 3:** R=1, M=1
+		- Periodically clear **R/M** bit for all the pages
+		- Replace a page at random, but prioritize **class 0**, then **class 1**, etc.
+- **FIFO:**
+	- Build queue of faulting pages and replace the head
+
+*Worth noting that the oldest page may still be useful, so then what?*
+
+## Second chance 
+
+- Improved FIFO to preserve important pages
+- For each visited page:
+
+## LRU
+
+
+
+
